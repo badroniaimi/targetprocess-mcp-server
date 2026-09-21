@@ -1157,14 +1157,14 @@ export class TpClient {
     return response
   }
 
-  async createTask<T>({ title, description, userStoryId }: { title: string, description?: string, userStoryId: string }): Promise<T> {
+  // A task inherits its project from the user story it hangs off. Sending an explicit
+  // Project — this was always config.tp.projectId — makes TP reject the create with
+  // 400 for every story that lives outside that one configured project.
+  async createTask<T>({ title, description, userStoryId }: { title: string, description?: string, userStoryId: string }): Promise<TpResult<T>> {
     const task: Record<string, any> = {
       "Name": title,
-      "Project": {
-        "Id": config.tp.projectId
-      },
       "UserStory": {
-        "Id": userStoryId
+        "Id": parseInt(userStoryId)
       },
     }
 
@@ -1172,10 +1172,10 @@ export class TpClient {
       task["Description"] = description
     }
 
-    return this.post<any, T>({
+    return this.postRaw<any, T>({
       pathParam: ["Tasks"],
       param: { "format": "json" },
-    }, task) as T
+    }, task)
   }
 
   async logTime<T>({
