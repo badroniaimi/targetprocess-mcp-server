@@ -7,7 +7,8 @@
     "build": "tsc",
     "postbuild": "node chmod.js",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepare": "npm run build"
   },
   "files": [
     "build"

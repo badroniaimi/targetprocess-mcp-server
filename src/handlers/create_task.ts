@@ -9,18 +9,20 @@ export async function handleCreateTask(
     description?: string
   },
 ) {
-  const response = await tp.createTask<TP.Task>(params)
+  const result = await tp.createTask<TP.Task>(params)
 
-  if (response instanceof Error) {
+  if (!result.ok) {
     return {
       content: [{
         type: 'text' as const,
-        text: `Failed to create task "${params.title}"\n Error: ${response.message}`
+        text: `Failed to create task "${params.title}"\n` +
+          `HTTP status: ${result.status}\n` +
+          `Response body: ${result.body}`
       }],
     }
   }
 
   return {
-    content: [{ type: 'text' as const, text: JSON.stringify(response) }],
+    content: [{ type: 'text' as const, text: JSON.stringify(result.data) }],
   }
 }
